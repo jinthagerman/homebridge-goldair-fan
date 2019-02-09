@@ -1,0 +1,22 @@
+{
+  "name": "homebridge-goldair-fan",
+  "version": "0.0.1",
+  "description": "Goldair SleepSmart plugin for homebridge: https://github.com/nfarina/homebridge",
+  "license": "MIT",
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jinthagerman/homebridge-goldair-fan.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jinthagerman/homebridge-goldair-fan/issues"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+  "dependencies": {
+  }
+}
