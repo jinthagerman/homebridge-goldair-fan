@@ -85,10 +85,24 @@ FanAccessory.prototype.setActive = function(state, callback) {
 FanAccessory.prototype.getRotationSpeed = function(callback) {
   this.log("Getting current rotation speed...");
   callback(null, 100);
+  
+  if (this.tuyaDevice.isConnected()) {
+    this.tuyaDevice.get({dps: 2})
+      .then(speed => callback(null, speed/12)
+  } else {
+    callback('error')
+  }
 }
 
-FanAccessory.prototype.setRotationSpeed = function(state, callback) {
+FanAccessory.prototype.setRotationSpeed = function(speed, callback) {
   this.log("Set rotation speed to %s", state);
+  
+  if (this.tuyaDevice.isConnected()) {
+    this.tuyaDevice.set({dps: 2, set: Math.ceil(speed*0.12)})
+      .then(success => callback(success ? null : 'error'))
+  } else {
+    callback('error')
+  }
 }
 
 FanAccessory.prototype.getSwingMode = function(callback) {
