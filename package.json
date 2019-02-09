@@ -1,6 +1,6 @@
 {
   "name": "homebridge-goldair-fan",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Goldair SleepSmart plugin for homebridge: https://github.com/nfarina/homebridge",
   "license": "MIT",
   "keywords": [

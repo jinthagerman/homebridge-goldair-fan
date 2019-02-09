@@ -92,7 +92,7 @@ FanAccessory.prototype.setRotationSpeed = function(speed, callback) {
 
 FanAccessory.prototype.getSwingMode = function(callback) {
   this.log("Getting current SwingMode...");
-  callback(null, Characteristic.SwingMode.SWING_ENABLED);
+  
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.get({dps: 8})
       .then(state => callback(null, state ? Characteristic.SwingMode.SWING_ENABLED : Characteristic.SwingMode.SWING_DISABLED))
