@@ -26,35 +26,59 @@ function FanAccessory(log, config) {
 
   this.service
     .getCharacteristic(Characteristic.Active)
-    .on('get', this.getState.bind(this))
-    .on('set', this.setState.bind(this));
+    .on('get', this.getActive.bind(this))
+    .on('set', this.setActive.bind(this));
 
   this.service
     .getCharacteristic(Characteristic.RotationSpeed)
-    .on('get', this.getState.bind(this))
-    .on('set', this.setState.bind(this));
+    .on('get', this.getRotationSpeed.bind(this))
+    .on('set', this.setRotationSpeed.bind(this));
 
   this.service
     .getCharacteristic(Characteristic.SwingMode)
-    .on('get', this.getState.bind(this))
-    .on('set', this.setState.bind(this));
+    .on('get', this.getSwingMode.bind(this))
+    .on('set', this.setSwingMode.bind(this));
 
   this.service
     .getCharacteristic(Characteristic.LockPhysicalControls)
-    .on('get', this.getState.bind(this))
-    .on('set', this.setState.bind(this));
+    .on('get', this.getLockPhysicalControls.bind(this))
+    .on('set', this.setLockPhysicalControls.bind(this));
 }
 
-FanAccessory.prototype.getState = function(callback) {
-  this.log("Getting current state...");
-  this.service.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE);
-  this.service.setCharacteristic(Characteristic.RotationSpeed, 100);
-  this.service.setCharacteristic(Characteristic.SwingMode, Characteristic.SwingMode.SWING_ENABLED);
-  this.service.setCharacteristic(Characteristic.LockPhysicalControls, Characteristic.LockPhysicalControls.CONTROL_LOCK_ENABLED);
+FanAccessory.prototype.getActive = function(callback) {
+  this.log("Getting current active state...");
+  callback(null, Characteristic.Active.ACTIVE);
 }
 
-FanAccessory.prototype.setState = function(state, callback) {
-  this.log("Set state to %s", state);
+FanAccessory.prototype.setActive = function(state, callback) {
+  this.log("Set active to %s", state);
+}
+
+FanAccessory.prototype.getRotationSpeed = function(callback) {
+  this.log("Getting current rotation speed...");
+  callback(null, 100);
+}
+
+FanAccessory.prototype.setRotationSpeed = function(state, callback) {
+  this.log("Set rotation speed to %s", state);
+}
+
+FanAccessory.prototype.getSwingMode = function(callback) {
+  this.log("Getting current SwingMode...");
+  callback(null, Characteristic.SwingMode.SWING_ENABLED);
+}
+
+FanAccessory.prototype.setSwingMode = function(state, callback) {
+  this.log("Set SwingMode to %s", state);
+}
+
+FanAccessory.prototype.getLockPhysicalControls = function(callback) {
+  this.log("Getting current LockPhysicalControls state...");
+  callback(null, Characteristic.LockPhysicalControls.CONTROL_LOCK_ENABLED);
+}
+
+FanAccessory.prototype.setLockPhysicalControls = function(state, callback) {
+  this.log("Set LockPhysicalControls to %s", state);
 }
 
 FanAccessory.prototype.getServices = function() {
