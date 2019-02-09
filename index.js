@@ -47,8 +47,12 @@ function FanAccessory(log, config) {
 
 LockitronAccessory.prototype.getState = function(callback) {
   this.log("Getting current state...");
+  this.service.setCharacteristic(Characteristic.Active, Characteristic.Active.ACTIVE);
+  this.service.setCharacteristic(Characteristic.RotationSpeed, 100);
+  this.service.setCharacteristic(Characteristic.SwingMode, Characteristic.SwingMode.SWING_ENABLED);
+  this.service.setCharacteristic(Characteristic.LockPhysicalControls, Characteristic.LockPhysicalControls.CONTROL_LOCK_ENABLED);
 }
-  
+
 LockitronAccessory.prototype.setState = function(state, callback) {
   this.log("Set state to %s", lockitronState);
 }
