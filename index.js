@@ -54,7 +54,7 @@ FanAccessory.prototype.getState = function(callback) {
 }
 
 FanAccessory.prototype.setState = function(state, callback) {
-  this.log("Set state to %s", lockitronState);
+  this.log("Set state to %s", state);
 }
 
 FanAccessory.prototype.getServices = function() {
