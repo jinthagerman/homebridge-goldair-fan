@@ -1,3 +1,5 @@
+const TuyaDevice = require('tuyapi');
+
 var Service, Characteristic;
 
 module.exports = function(homebridge) {
@@ -10,9 +12,7 @@ module.exports = function(homebridge) {
 function FanAccessory(log, config) {
   this.log = log;
   this.name = config["name"];
-  this.accessToken = config["id"];
-  this.lockID = config["key"];
-  
+
   this.service = new Service.Fanv2(this.name);
 
   //this.addCharacteristic(Characteristic.Active);
@@ -23,6 +23,21 @@ function FanAccessory(log, config) {
   //this.addOptionalCharacteristic(Characteristic.RotationDirection);
   //this.addOptionalCharacteristic(Characteristic.RotationSpeed);
   //this.addOptionalCharacteristic(Characteristic.SwingMode);
+
+  try {
+    // Construct a new device and resolve the IP
+    this.tuyaDevice = new TuyaDevice({id: config["id"], key: config["key"], persistentConnection: true});
+
+    this.tuyaDevice.resolveId()
+      .then(() => this.tuyaDevice.connect())
+      .then(connected => this.log.info('Connected: %s', connected))
+
+  } catch (error) {
+    this.log.error(
+      '%s was unable to be found. Please try using a static IP in your config.json.',
+      device.id
+    );
+  }
 
   this.service
     .getCharacteristic(Characteristic.Active)
@@ -47,11 +62,24 @@ function FanAccessory(log, config) {
 
 FanAccessory.prototype.getActive = function(callback) {
   this.log("Getting current active state...");
-  callback(null, Characteristic.Active.ACTIVE);
+
+  if (this.tuyaDevice.isConnected()) {
+    this.tuyaDevice.get()
+      .then(status => callback(null, status ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE) )
+  } else {
+    callback('error')
+  }
 }
 
 FanAccessory.prototype.setActive = function(state, callback) {
   this.log("Set active to %s", state);
+
+  if (this.tuyaDevice.isConnected()) {
+    this.tuyaDevice.set({set: state})
+      .then(status => callback(null) )
+  } else {
+    callback('error')
+  }
 }
 
 FanAccessory.prototype.getRotationSpeed = function(callback) {
