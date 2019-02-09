@@ -107,10 +107,23 @@ FanAccessory.prototype.setRotationSpeed = function(speed, callback) {
 FanAccessory.prototype.getSwingMode = function(callback) {
   this.log("Getting current SwingMode...");
   callback(null, Characteristic.SwingMode.SWING_ENABLED);
+  if (this.tuyaDevice.isConnected()) {
+    this.tuyaDevice.get({dps: 8})
+      .then(state => callback(null, state ? Characteristic.SwingMode.SWING_ENABLED ? Characteristic.SwingMode.SWING_DISABLED))
+  } else {
+    callback('error')
+  }
 }
 
 FanAccessory.prototype.setSwingMode = function(state, callback) {
   this.log("Set SwingMode to %s", state);
+  
+  if (this.tuyaDevice.isConnected()) {
+    this.tuyaDevice.set({dps: 8, set: state == Characteristic.SwingMode.SWING_ENABLED ? true : false })
+      .then(success => callback(success ? null : 'error'))
+  } else {
+    callback('error')
+  }
 }
 
 FanAccessory.prototype.getLockPhysicalControls = function(callback) {
