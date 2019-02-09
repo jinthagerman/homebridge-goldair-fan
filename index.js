@@ -87,7 +87,7 @@ FanAccessory.prototype.getRotationSpeed = function(callback) {
   
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.get({dps: 2})
-      .then(speed => callback(null, speed/12))
+      .then(speed => callback(null, speed/12*100))
   } else {
     callback('error')
   }
