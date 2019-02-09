@@ -87,7 +87,7 @@ FanAccessory.prototype.setRotationSpeed = function(speed, callback) {
                          data: {
                             '2': Math.ceil(speed*0.12),
                             '3': 'normal'
-                         })
+                         }})
       .then(success => callback(success ? null : 'error'))
   } else {
     callback('error')
