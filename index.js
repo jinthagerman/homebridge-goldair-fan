@@ -15,15 +15,6 @@ function FanAccessory(log, config) {
 
   this.service = new Service.Fanv2(this.name);
 
-  //this.addCharacteristic(Characteristic.Active);
-  //this.addOptionalCharacteristic(Characteristic.CurrentFanState);
-  //this.addOptionalCharacteristic(Characteristic.TargetFanState);
-  //this.addOptionalCharacteristic(Characteristic.LockPhysicalControls);
-  //this.addOptionalCharacteristic(Characteristic.Name);
-  //this.addOptionalCharacteristic(Characteristic.RotationDirection);
-  //this.addOptionalCharacteristic(Characteristic.RotationSpeed);
-  //this.addOptionalCharacteristic(Characteristic.SwingMode);
-
   try {
     // Construct a new device and resolve the IP
     this.tuyaDevice = new TuyaDevice({id: config["id"], key: config["key"], persistentConnection: true});
@@ -53,11 +44,6 @@ function FanAccessory(log, config) {
     .getCharacteristic(Characteristic.SwingMode)
     .on('get', this.getSwingMode.bind(this))
     .on('set', this.setSwingMode.bind(this));
-
-  this.service
-    .getCharacteristic(Characteristic.LockPhysicalControls)
-    .on('get', this.getLockPhysicalControls.bind(this))
-    .on('set', this.setLockPhysicalControls.bind(this));
 }
 
 FanAccessory.prototype.getActive = function(callback) {
@@ -124,15 +110,6 @@ FanAccessory.prototype.setSwingMode = function(state, callback) {
   } else {
     callback('error')
   }
-}
-
-FanAccessory.prototype.getLockPhysicalControls = function(callback) {
-  this.log("Getting current LockPhysicalControls state...");
-  callback(null, Characteristic.LockPhysicalControls.CONTROL_LOCK_ENABLED);
-}
-
-FanAccessory.prototype.setLockPhysicalControls = function(state, callback) {
-  this.log("Set LockPhysicalControls to %s", state);
 }
 
 FanAccessory.prototype.getServices = function() {
