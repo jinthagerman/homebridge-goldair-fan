@@ -81,9 +81,13 @@ FanAccessory.prototype.getRotationSpeed = function(callback) {
 
 FanAccessory.prototype.setRotationSpeed = function(speed, callback) {
   this.log("Set rotation speed to %s", speed);
-  
+
   if (this.tuyaDevice.isConnected()) {
-    this.tuyaDevice.set({dps: 2, set: Math.ceil(speed*0.12)})
+    this.tuyaDevice.set({multiple: true,
+                         data: {
+                            '2': Math.ceil(speed*0.12),
+                            '3': 'normal'
+                         })
       .then(success => callback(success ? null : 'error'))
   } else {
     callback('error')
