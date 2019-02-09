@@ -76,7 +76,7 @@ FanAccessory.prototype.setActive = function(state, callback) {
 
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.set({set: state == Characteristic.Active.ACTIVE ? true : false})
-      .then(status => callback(null) )
+      .then(success => callback(success ? null : 'error'))
   } else {
     callback('error')
   }
