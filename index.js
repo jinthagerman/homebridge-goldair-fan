@@ -3,8 +3,8 @@ var Service, Characteristic;
 module.exports = function(homebridge) {
   Service = homebridge.hap.Service;
   Characteristic = homebridge.hap.Characteristic;
-  
-  homebridge.registerAccessory("homebridge-goldair-fan", "Goldair SleepSmart", FanAccessory);
+
+  homebridge.registerAccessory("homebridge-goldair-fan", "GoldairSleepSmart", FanAccessory);
 }
 
 function FanAccessory(log, config) {
