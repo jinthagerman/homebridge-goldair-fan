@@ -27,16 +27,7 @@ function FanAccessory(log, config) {
         this.log('Connected: %s', connected);
         return this.tuyaDevice.get({schema: true});
       })
-      .then(schema => {
-        this.log('Schema for this device:\n%s', JSON.stringify(schema, null, 2))
-
-        if ("101" in schema) {
-          this.service
-            .getCharacteristic(Characteristic.LockPhysicalControls)
-            .on('get', this.getLockPhysicalControls.bind(this))
-            .on('set', this.setLockPhysicalControls.bind(this));
-        }
-      });
+      .then(schema => this.log('Schema for this device:\n%s', JSON.stringify(schema, null, 2)));
 
   } catch (error) {
     this.log.error(
@@ -60,6 +51,12 @@ function FanAccessory(log, config) {
     .on('get', this.getSwingMode.bind(this))
     .on('set', this.setSwingMode.bind(this));
 
+  if (config['has_light_control']) {
+    this.service
+      .getCharacteristic(Characteristic.LockPhysicalControls)
+      .on('get', this.getLockPhysicalControls.bind(this))
+      .on('set', this.setLockPhysicalControls.bind(this));
+  }
 }
 
 FanAccessory.prototype.getActive = function(callback) {
