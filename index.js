@@ -27,7 +27,7 @@ function FanAccessory(log, config) {
         this.log('Connected: %s', connected);
         return this.tuyaDevice.get({schema: true});
       })
-      .then(schema => this.log('Schema for this device: %s', schema));
+      .then(schema => this.log('Schema for this device:\n%s', JSON.stringify(schema, null, 2)));
 
   } catch (error) {
     this.log.error(
@@ -89,7 +89,7 @@ FanAccessory.prototype.getRotationSpeed = function(callback) {
     this.tuyaDevice.get({dps: 2})
       .then(speed => {
         var percentage = speed/12*100;
-        this.log("Returned rotation speed of  " + percentage);
+        this.log("Returned rotation speed of " + percentage);
         callback(null, percentage);
       })
       .catch((err) => callback(err));
@@ -101,11 +101,12 @@ FanAccessory.prototype.getRotationSpeed = function(callback) {
 FanAccessory.prototype.setRotationSpeed = function(speed, callback) {
   this.log("Set rotation speed to %s", speed);
 
+  var speedIncrement = Math.ceil(speed*0.12)
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.set({multiple: true,
                          data: {
                             '1': true,
-                            '2': Math.ceil(speed*0.12),
+                            '2': speedIncrement,
                             '3': 'normal'
                          }})
       .then(success => {
