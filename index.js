@@ -93,7 +93,7 @@ FanAccessory.prototype.getRotationSpeed = function(callback) {
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.get({dps: 2})
       .then(speed => {
-        var percentage = speed/12*100;
+        var percentage = Math.ceil(speed/12*100);
         this.log("Returned rotation speed of " + percentage);
         callback(null, percentage);
       })
@@ -112,7 +112,7 @@ FanAccessory.prototype.setRotationSpeed = function(speed, callback) {
       .then(schema => {
         var data = schema.dps;
         data['1'] = true;
-        data['2'] = speedIncrement;
+        data['2'] = speedIncrement.toString();
         data['3'] = 'normal';
         return this.tuyaDevice.set({multiple: true, data: data});
       })
