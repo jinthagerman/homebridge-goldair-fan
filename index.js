@@ -27,7 +27,16 @@ function FanAccessory(log, config) {
         this.log('Connected: %s', connected);
         return this.tuyaDevice.get({schema: true});
       })
-      .then(schema => this.log('Schema for this device:\n%s', JSON.stringify(schema, null, 2)));
+      .then(schema => {
+        this.log('Schema for this device:\n%s', JSON.stringify(schema, null, 2))
+
+        if ("101" in schema) {
+          this.service
+            .getCharacteristic(Characteristic.LockPhysicalControls)
+            .on('get', this.getLockPhysicalControls.bind(this))
+            .on('set', this.setLockPhysicalControls.bind(this));
+        }
+      });
 
   } catch (error) {
     this.log.error(
@@ -50,6 +59,7 @@ function FanAccessory(log, config) {
     .getCharacteristic(Characteristic.SwingMode)
     .on('get', this.getSwingMode.bind(this))
     .on('set', this.setSwingMode.bind(this));
+
 }
 
 FanAccessory.prototype.getActive = function(callback) {
@@ -148,6 +158,37 @@ FanAccessory.prototype.setSwingMode = function(state, callback) {
     this.tuyaDevice.set({dps: 8, set: state == Characteristic.SwingMode.SWING_ENABLED ? true : false })
       .then(success => {
         this.log("Set SwingMode " + success ? "succeeded" : "failed");
+        callback(success ? null : 'error');
+      })
+      .catch((err) => callback(err));
+  } else {
+    callback('error');
+  }
+}
+
+FanAccessory.prototype.getLockPhysicalControls = function(callback) {
+  this.log("Getting current light status...");
+
+  if (this.tuyaDevice.isConnected()) {
+    this.tuyaDevice.get({dps: 101})
+      .then(state => {
+        var lightStatus = state ? Characteristic.LockPhysicalControls.CONTROL_LOCK_ENABLED : Characteristic.LockPhysicalControls.CONTROL_LOCK_DISABLED;
+        this.log("Returned light status of " + lightStatus);
+        callback(null, lightStatus);
+      })
+      .catch((err) => callback(err));
+  } else {
+    callback('error');
+  }
+}
+
+FanAccessory.prototype.setLockPhysicalControls = function(state, callback) {
+  this.log("Set light status to %s", state);
+
+  if (this.tuyaDevice.isConnected()) {
+    this.tuyaDevice.set({dps: 101, set: state == Characteristic.LockPhysicalControls.CONTROL_LOCK_ENABLED ? true : false })
+      .then(success => {
+        this.log("Set light status " + success ? "succeeded" : "failed");
         callback(success ? null : 'error');
       })
       .catch((err) => callback(err));
