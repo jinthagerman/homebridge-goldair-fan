@@ -17,11 +17,17 @@ function FanAccessory(log, config) {
 
   try {
     // Construct a new device and resolve the IP
-    this.tuyaDevice = new TuyaDevice({id: config["id"], key: config["key"], persistentConnection: true});
+    this.tuyaDevice = new TuyaDevice({id: config["id"],
+                                      key: config["key"],
+                                      persistentConnection: true});
 
     this.tuyaDevice.resolveId()
       .then(() => this.tuyaDevice.connect())
-      .then(connected => this.log.info('Connected: %s', connected))
+      .then(connected => {
+        this.log('Connected: %s', connected);
+        return this.tuyaDevice.get({schema: true});
+      })
+      .then(schema => this.log('Schema for this device: %s', schema));
 
   } catch (error) {
     this.log.error(
@@ -51,9 +57,13 @@ FanAccessory.prototype.getActive = function(callback) {
 
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.get()
-      .then(status => callback(null, status ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE) )
+      .then(status => {
+        this.log("Returned current active state as " + status);
+        callback(null, status ? Characteristic.Active.ACTIVE : Characteristic.Active.INACTIVE);
+      })
+      .catch((err) => callback(err));
   } else {
-    callback('error')
+    callback('error');
   }
 }
 
@@ -62,9 +72,13 @@ FanAccessory.prototype.setActive = function(state, callback) {
 
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.set({set: state == Characteristic.Active.ACTIVE ? true : false})
-      .then(success => callback(success ? null : 'error'))
+      .then(success => {
+        this.log("Set Active " + success ? "succeeded" : "failed");
+        callback(success ? null : 'error');
+      })
+      .catch((err) => callback(err));
   } else {
-    callback('error')
+    callback('error');
   }
 }
 
@@ -73,9 +87,14 @@ FanAccessory.prototype.getRotationSpeed = function(callback) {
   
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.get({dps: 2})
-      .then(speed => callback(null, speed/12*100))
+      .then(speed => {
+        var percentage = speed/12*100;
+        this.log("Returned rotation speed of  " + percentage);
+        callback(null, percentage);
+      })
+      .catch((err) => callback(err));
   } else {
-    callback('error')
+    callback('error');
   }
 }
 
@@ -85,12 +104,17 @@ FanAccessory.prototype.setRotationSpeed = function(speed, callback) {
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.set({multiple: true,
                          data: {
+                            '1': true,
                             '2': Math.ceil(speed*0.12),
                             '3': 'normal'
                          }})
-      .then(success => callback(success ? null : 'error'))
+      .then(success => {
+        this.log("Set rotation speed " + success ? "succeeded" : "failed");
+        callback(success ? null : 'error');
+      })
+      .catch((err) => callback(err));
   } else {
-    callback('error')
+    callback('error');
   }
 }
 
@@ -99,9 +123,14 @@ FanAccessory.prototype.getSwingMode = function(callback) {
   
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.get({dps: 8})
-      .then(state => callback(null, state ? Characteristic.SwingMode.SWING_ENABLED : Characteristic.SwingMode.SWING_DISABLED))
+      .then(state => {
+        var swingMode = state ? Characteristic.SwingMode.SWING_ENABLED : Characteristic.SwingMode.SWING_DISABLED;
+        this.log("Returned SwingMode of " + swingMode);
+        callback(null, swingMode);
+      })
+      .catch((err) => callback(err));
   } else {
-    callback('error')
+    callback('error');
   }
 }
 
@@ -110,9 +139,13 @@ FanAccessory.prototype.setSwingMode = function(state, callback) {
   
   if (this.tuyaDevice.isConnected()) {
     this.tuyaDevice.set({dps: 8, set: state == Characteristic.SwingMode.SWING_ENABLED ? true : false })
-      .then(success => callback(success ? null : 'error'))
+      .then(success => {
+        this.log("Set SwingMode " + success ? "succeeded" : "failed");
+        callback(success ? null : 'error');
+      })
+      .catch((err) => callback(err));
   } else {
-    callback('error')
+    callback('error');
   }
 }
 
